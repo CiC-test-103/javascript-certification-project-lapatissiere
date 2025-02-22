@@ -1,8 +1,10 @@
 // Necessary Imports, DO NOT REMOVE
+const { getSystemErrorMap } = require("util");
 const { LinkedList } = require("./LinkedList");
 const { Student } = require('./Student')
 const readline = require('readline');
 
+const studentManagementSystem = new LinkedList();
 // Initialize terminal interface
 const rl = readline.createInterface({
   input: process.stdin,
@@ -13,7 +15,7 @@ const rl = readline.createInterface({
 /**
  * studentManagementSystem is the object that the main() function will be modifying
  */
-const studentManagementSystem = new LinkedList();
+
 
 // Display available commands
 function main() {
@@ -23,7 +25,7 @@ function main() {
       - remove [email]: Remove a student by email
       - display: Show all students
       - find [email]: Find a student by email
-      - save: Save the current linked list to the specified file
+      - save [fileName]: Save the current linked list to the specified file
       - load [fileName]: Load a linked list from a file
       - clear: Clear the current linked list
       - q: Quit the terminal
@@ -38,7 +40,6 @@ async function handleCommand(command) {
     case 'add':
       /**
        * TODO:
-       *  Finds a particular student by email, and returns their information
        *  You will need to do the following:
        *   - Implement LinkedList (run tests locally to check implementation)
        *   - Grab the args (code is given)
@@ -47,7 +48,9 @@ async function handleCommand(command) {
         console.log('Adding student...')
         const [name, year, email, specialization] = args
         // --------> WRITE YOUR CODE BELOW
-
+        studentManagementSystem.addStudent(new Student(name, year, email, specialization));
+        console.log('Student added successfully.');
+        console.log(studentManagementSystem.displayStudents());
         // --------> WRITE YOUR CODE ABOVE
         break;
 
@@ -62,7 +65,10 @@ async function handleCommand(command) {
        */
       console.log('Removing student...')
       // --------> WRITE YOUR CODE BELOW
-      
+      const removeEmail = args[0]
+      studentManagementSystem.removeStudent(removeEmail);
+      console.log('This student has been removed.');
+      console.log(studentManagementSystem.displayStudents());
       // --------> WRITE YOUR CODE ABOVE
       break;
 
@@ -75,7 +81,7 @@ async function handleCommand(command) {
        */
       console.log('Displaying students...')
       // --------> WRITE YOUR CODE BELOW
-
+      console.log(studentManagementSystem.displayStudents());
       // --------> WRITE YOUR CODE ABOVE
       break;
 
@@ -91,7 +97,13 @@ async function handleCommand(command) {
        */
       console.log('Finding student...')
       // --------> WRITE YOUR CODE BELOW
-      
+      const findEmail = args[0];
+      const foundStudent = studentManagementSystem.findStudent(findEmail);
+      if (foundStudent !== -1){
+        console.log(`This email belongs to ${foundStudent.getName()}.`);
+      } else {
+        console.log('Student does not exist.');
+      } 
       // --------> WRITE YOUR CODE ABOVE
       break;
 
@@ -106,9 +118,12 @@ async function handleCommand(command) {
        */
       console.log('Saving data...')
       // --------> WRITE YOUR CODE BELOW
-
+      const saveFileName = args[0];
+      await studentManagementSystem.saveToJson(saveFileName);
+      console.log('Data saved.');
       // --------> WRITE YOUR CODE ABOVE
-
+      break;
+      
     case "load":
       /**
        * TODO:
@@ -120,7 +135,9 @@ async function handleCommand(command) {
        */
       console.log('Loading data...')
       // --------> WRITE YOUR CODE BELOW
-
+      const loadFileName = args[0];
+      await studentManagementSystem.loadFromJSON(loadFileName);
+      console.log('Data loaded.')
       // --------> WRITE YOUR CODE ABOVE
       break;
 
@@ -134,7 +151,8 @@ async function handleCommand(command) {
        */
       console.log('Clearing data...')
       // --------> WRITE YOUR CODE BELOW
-
+      studentManagementSystem.clearStudents();
+      console.log('Student list cleared.')
       // --------> WRITE YOUR CODE ABOVE
       break;
 
